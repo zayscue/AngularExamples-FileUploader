@@ -39,6 +39,7 @@ export class UploaderComponent {
     }
 
     onSubmit(event: any) {
+        // use an injectable class to post this.droppedFiles to the backend web service
         if (this.form.nativeElement.classList.contains('is-uploading')) return false;
         this.form.nativeElement.classList.add('is-uploading');
         this.form.nativeElement.classList.remove('is-error');
