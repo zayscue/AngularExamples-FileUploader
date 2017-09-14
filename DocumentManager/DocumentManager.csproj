@@ -23,9 +23,11 @@
   <ItemGroup>
     <None Remove="ClientApp\app\components\uploader\draganddrop.directive.ts" />
     <None Remove="ClientApp\app\components\uploader\uploader.component.ts" />
+    <None Remove="ClientApp\app\components\uploader\uploadservice.ts" />
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\app\components\uploader\uploadservice.ts" />
     <TypeScriptCompile Include="ClientApp\app\directives\dragAndDrop.directive.ts" />
     <TypeScriptCompile Include="ClientApp\app\components\uploader\featuredetector.ts" />
     <TypeScriptCompile Include="ClientApp\app\components\uploader\uploader.component.ts" />

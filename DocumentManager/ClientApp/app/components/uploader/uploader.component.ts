@@ -1,9 +1,10 @@
 ﻿import { Component, ViewChild, ElementRef } from '@angular/core';
 import { FeatureDetector } from './featuredetector';
+import { UploadService } from './uploadservice';
 
 @Component({
     selector: 'uploader',
-    providers: [FeatureDetector],
+    providers: [FeatureDetector, UploadService],
     templateUrl: './uploader.component.html',
     styleUrls: ['./uploader.component.css']
 })
@@ -14,7 +15,7 @@ export class UploaderComponent {
     spanText: string;
     dragAndDropSupported: boolean;
 
-    constructor(private featureDetector : FeatureDetector) { }
+    constructor(private featureDetector : FeatureDetector,private uploadService : UploadService) { }
 
     ngOnInit() {
         this.labelText = 'Choose a file';
@@ -38,15 +39,12 @@ export class UploaderComponent {
         this.form.nativeElement.dispatchEvent(submitEvent);
     }
 
-    onSubmit(event: any) {
-        // use an injectable class to post this.droppedFiles to the backend web service
+    async onSubmit(event: any) {
         if (this.form.nativeElement.classList.contains('is-uploading')) return false;
         this.form.nativeElement.classList.add('is-uploading');
         this.form.nativeElement.classList.remove('is-error');
-        const callback = () => {
-            this.form.nativeElement.classList.remove('is-uploading');
-        };
-        setTimeout(callback, 3000);
+        await this.uploadService.uploadFiles(this.droppedFiles);
+        this.form.nativeElement.classList.remove('is-uploading');
     }
 
     onChange(event: any) {
