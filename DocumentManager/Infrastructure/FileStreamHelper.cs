@@ -14,7 +14,7 @@ namespace DocumentManager.Infrastructure
 {
     public static class FileStreamingHelper
     {
-        private static readonly FormOptions _defaultFormOptions = new FormOptions();
+        private static readonly FormOptions DefaultFormOptions = new FormOptions();
 
         public static async Task<FormValueProvider> StreamFile(this HttpRequest request)
         {
@@ -29,7 +29,7 @@ namespace DocumentManager.Infrastructure
 
             var boundary = MultipartRequestHelper.GetBoundary(
                 MediaTypeHeaderValue.Parse(request.ContentType),
-                _defaultFormOptions.MultipartBoundaryLengthLimit);
+                DefaultFormOptions.MultipartBoundaryLengthLimit);
             var reader = new MultipartReader(boundary, request.Body);
 
             var section = await reader.ReadNextSectionAsync();
@@ -43,8 +43,11 @@ namespace DocumentManager.Infrastructure
                     if (MultipartRequestHelper.HasFileContentDisposition(contentDisposition))
                     {
                         var basePath = PlatformServices.Default.Application.ApplicationBasePath;
-                        var path = Path.Combine(basePath, contentDisposition.FileName.Value.Replace("\"", string.Empty));
-                        using (var stream = File.Create(path))
+                        var directoryPath = Path.Combine(basePath, "uploads");
+                        if (!Directory.Exists(directoryPath))
+                            Directory.CreateDirectory(directoryPath);
+                        var filePath = Path.Combine(directoryPath, contentDisposition.FileName.Value.Replace("\"", string.Empty));
+                        using (var stream = File.Create(filePath))
                         {
                             await section.Body.CopyToAsync(stream);
                         }
@@ -74,9 +77,9 @@ namespace DocumentManager.Infrastructure
                             }
                             formAccumulator.Append(key.Value, value);
 
-                            if (formAccumulator.ValueCount > _defaultFormOptions.ValueCountLimit)
+                            if (formAccumulator.ValueCount > DefaultFormOptions.ValueCountLimit)
                             {
-                                throw new InvalidDataException($"Form key count limit {_defaultFormOptions.ValueCountLimit} exceeded.");
+                                throw new InvalidDataException($"Form key count limit {DefaultFormOptions.ValueCountLimit} exceeded.");
                             }
                         }
                     }
